@@ -16,21 +16,21 @@ async function createOrder (req, res) {
 
     try {
 
-        const checkClient = connection.query(`SELECT * FROM clients WHERE id = $1;`
+        const checkClient = await connection.query(`SELECT * FROM clients WHERE id = $1;`
         , [clientId]);
 
         if(!checkClient.rows[0]) {
             return res.sendStatus(404);
         }
 
-        const checkCake = connection.query(`SELECT * FROM cakes WHERE id = $1;`
+        const checkCake = await connection.query(`SELECT * FROM cakes WHERE id = $1;`
         , [cakeId]);
 
         if(!checkCake.rows[0]) {
             return res.sendStatus(404);
         }
 
-        connection.query(`INSERT INTO orders ("clientId", "cakeId", quantity, "createdAt", "totalPrice")
+        await connection.query(`INSERT INTO orders ("clientId", "cakeId", quantity, "createdAt", "totalPrice")
         VALUES ($1, $2, $3, $4, $5);`, [clientId, cakeId, quantity, newDate, totalPrice]);
         
         return res.sendStatus(201);
@@ -44,6 +44,13 @@ async function createOrder (req, res) {
 
 async function getOrder (req, res) {
 
+    try {
+
+        
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 };
 
 export { createOrder };

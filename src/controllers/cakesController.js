@@ -15,13 +15,13 @@ async function createCake (req, res) {
 
     try {
 
-        const checkName = connection.query(`SELECT * FROM cakes WHERE name = $1;`, [name]);
+        const checkName = await connection.query(`SELECT * FROM cakes WHERE name = $1;`, [name]);
 
         if(checkName.rows[0]) {
             return res.sendStatus(409);
         }
 
-        connection.query(`INSERT INTO cakes (name, price, image, description) VALUES ($1, $2, $3, $4);`
+        await connection.query(`INSERT INTO cakes (name, price, image, description) VALUES ($1, $2, $3, $4);`
         ,[name, price, image, description]);
 
         return res.sendStatus(201);

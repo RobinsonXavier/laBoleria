@@ -18,14 +18,14 @@ async function createClient (req, res) {
 
     try {
         
-        const checkPhone = connection.query(`SELECT * FROM clients WHERE phone = $1;`
+        const checkPhone = await connection.query(`SELECT * FROM clients WHERE phone = $1;`
         , [phone]);
 
         if(checkPhone.rows[0]) {
             return res.sendStatus(409);
         }
 
-        connection.query(`INSERT INTO clients (name, address, phone) VALUES ($1, $2, $3);`
+        await connection.query(`INSERT INTO clients (name, address, phone) VALUES ($1, $2, $3);`
         , [name, address, phone]);
 
         return sendStatus(201);
