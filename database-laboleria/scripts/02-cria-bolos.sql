@@ -5,3 +5,8 @@ CREATE TABLE "cakes" (
 	"image" VARCHAR(200) NOT NULL,
 	"description" TEXT NOT NULL
 );
+
+-- update from table
+
+ALTER TABLE "cakes"
+ADD COLUMN "flavourId" INTEGER REFERENCES "flavours"("id") NOT NULL;

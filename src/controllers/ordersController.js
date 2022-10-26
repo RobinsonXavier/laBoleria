@@ -20,8 +20,6 @@ async function createOrder (req, res) {
         const checkClient = await connection.query(`SELECT * FROM clients WHERE id = $1;`
         , [clientId]);
 
-        console.log(checkClient.rows)
-
         if(!checkClient.rows[0]) {
             return res.sendStatus(404);
         }

@@ -4,7 +4,7 @@ import {cakeSchema} from '../schemas/cakeSchema.js';
 
 
 async function createCake (req, res) {
-    const {name, price, image, description} = req.body;
+    const {name, price, image, description, flavourId} = req.body;
 
     const validation = cakeSchema.validate(req.body, {abortEarly: false});
 
@@ -16,7 +16,7 @@ async function createCake (req, res) {
         if (findImage) {
             return res.status(422).send(findImage);
         }
-        
+
         return res.status(400).send(errors);
     }
 
@@ -28,8 +28,15 @@ async function createCake (req, res) {
             return res.sendStatus(409);
         }
 
-        await connection.query(`INSERT INTO cakes (name, price, image, description) VALUES ($1, $2, $3, $4);`
-        ,[name, price, image, description]);
+        const checkFlavour = await connection.query(`SELECT * FROM flavours WHERE id = $1;`
+        , [flavourId]);
+
+        if(!checkFlavour.rows[0]) {
+            return res.sendStatus(404);
+        }
+
+        await connection.query(`INSERT INTO cakes (name, price, image, description, "flavourId") VALUES ($1, $2, $3, $4, $5);`
+        ,[name, price, image, description, flavourId]);
 
         return res.sendStatus(201);
         

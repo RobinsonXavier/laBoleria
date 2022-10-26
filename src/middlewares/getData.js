@@ -7,11 +7,13 @@ async function getData (req, res, next) {
          clients.address as address,
         clients.phone as phone, cakes.name as "cakeName",
         cakes.id as "cakeId", cakes.price as price,
-        cakes.description as description, cakes.image as image, orders.id as "orderId",
+        cakes.description as description, cakes.image as image,
+        flavours.name as "flavourName", orders.id as "orderId",
         orders."createdAt" as "createdAt", orders.quantity as quantity,
         orders."totalPrice" as "totalPrice" FROM orders 
         JOIN clients ON clients.id = orders."clientId"
-        JOIN cakes ON cakes.id = orders."cakeId";`
+        JOIN cakes ON cakes.id = orders."cakeId"
+        JOIN flavours ON cakes."flavourId" = flavours.id ;`
     );
 
     if(!orders.rows[0]) {
@@ -31,7 +33,8 @@ async function getData (req, res, next) {
                 name: element.cakeName,
                 price: element.price,
                 description: element.description,
-                image: element.image
+                image: element.image,
+                flavour: element.flavourName
             },
             orderId: element.orderId,
             createdAt: element.createdAt.toISOString().slice(0, 19).replace('T', ' '),
