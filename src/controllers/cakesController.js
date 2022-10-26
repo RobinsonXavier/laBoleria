@@ -10,6 +10,13 @@ async function createCake (req, res) {
 
     if (validation.error) {
         const errors = validation.error.details.map(detail => detail.message);
+
+        const findImage = errors.find(error => error.includes('image'));
+
+        if (findImage) {
+            return res.status(422).send(findImage);
+        }
+        
         return res.status(400).send(errors);
     }
 
