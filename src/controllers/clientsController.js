@@ -37,4 +37,43 @@ async function createClient (req, res) {
 
 };
 
-export {createClient};
+async function getClientOrders (req, res) {
+    const {id} = req.params;
+
+    try {
+        const checkClient = await connection.query(`SELECT * FROM clients WHERE id = $1;`
+        , [id]);
+
+        if (!checkClient.rows[0]) {
+            return res.sendStatus(404);
+        }
+
+        const clientOrder = await connection.query(
+            `SELECT orders.id as "orderId",
+            quantity, "createdAt", "totalPrice", cakes.name as "cakeName"
+            FROM orders JOIN cakes ON cakes.id = "cakeId" WHERE "clientId" = $1;`,
+            [id]
+        );
+
+        const clientRequest = clientOrder.rows.map ( element => {
+            const newObj = {
+                orderId: element.orderId,
+                quantity: element.quantity,
+                createdAt: element.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+                totalPrice: Number(element.totalPrice),
+                cakeName: element.cakeName
+            }
+
+            return newObj;
+        }) 
+
+        return res.status(200).send(clientRequest);
+
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
+
+}
+
+export {createClient, getClientOrders};

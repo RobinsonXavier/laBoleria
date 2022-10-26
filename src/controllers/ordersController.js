@@ -75,11 +75,14 @@ async function getOrderById (req, res) {
 
     try {
 
-        const clientOrders = res.locals.allData.filter( element => element.orderId === Number(id));
+        const checkOrder = await connection.query(`SELECT * FROM orders WHERE id = $1;`
+        , [id]);
 
-        if(!clientOrders) {
+        if(!checkOrder.rows[0]) {
             return res.sendStatus(404);
         }
+
+        const clientOrders = res.locals.allData.filter( element => element.orderId === Number(id));
 
         return res.status(200).send(clientOrders);
         
