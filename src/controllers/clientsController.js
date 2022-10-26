@@ -1,4 +1,4 @@
-import { connection } from '../database/db.js';
+import connection from '../database/db.js';
 
 import { clientSchema } from '../schemas/clientSchema.js';
 
@@ -28,7 +28,7 @@ async function createClient (req, res) {
         await connection.query(`INSERT INTO clients (name, address, phone) VALUES ($1, $2, $3);`
         , [name, address, phone]);
 
-        return sendStatus(201);
+        return res.sendStatus(201);
         
     } catch (error) {
         console.log(error)
