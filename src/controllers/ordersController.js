@@ -1,3 +1,4 @@
+
 import connection  from '../database/db.js';
 
 import { orderSchema } from '../schemas/orderSchema.js';
@@ -51,48 +52,8 @@ async function getOrder (req, res) {
 
     try {
 
-        const orders = await connection.query(
-            `SELECT clients.name as "clientName", clients.id as "clientId",
-             clients.address as address,
-            clients.phone as phone, cakes.name as "cakeName",
-            cakes.id as "cakeId", cakes.price as price,
-            cakes.description as description, cakes.image as image, orders.id as "orderId",
-            orders."createdAt" as "createdAt", orders.quantity as quantity,
-            orders."totalPrice" as "totalPrice" FROM orders 
-            JOIN clients ON clients.id = orders."clientId"
-            JOIN cakes ON cakes.id = orders."cakeId";`
-        );
-
-        if(!orders.rows[0]) {
-            return res.sendStatus(404);
-        }
-            
-        const allData = orders.rows.map( element => {
-            const newObj = {
-                client: {
-                    id: element.clientId,
-                    name: element.clientName,
-                    address: element.address,
-                    phone: element.phone
-                },
-                cake: {
-                    id: element.cakeId,
-                    name: element.cakeName,
-                    price: element.price,
-                    description: element.description,
-                    image: element.image
-                },
-                orderId: element.orderId,
-                createdAt: element.createdAt.toISOString().slice(0, 19).replace('T', ' '),
-                quantity: element.quantity,
-                totalPrice: element.totalPrice
-            }
-
-            return newObj;
-        });
-
         if(date) {
-            const searchOrder = allData.find ( element => element.createdAt.substring(0, 10) === date);
+            const searchOrder = res.locals.allData.find ( element => element.createdAt.substring(0, 10) === date);
 
             if (!searchOrder) {
                 return res.sendStatus(404);
@@ -101,8 +62,7 @@ async function getOrder (req, res) {
             return res.status(200).send(searchOrder);
         }
 
-
-        return res.status(200).send(allData);
+        return res.status(200).send(res.locals.allData);
 
     } catch (error) {
         console.log(error)
@@ -110,4 +70,23 @@ async function getOrder (req, res) {
     }
 };
 
-export { createOrder, getOrder };
+async function getOrderById (req, res) {
+    const {id} = req.params;
+
+    try {
+
+        const clientOrders = res.locals.allData.filter( element => element.orderId === Number(id));
+
+        if(!clientOrders) {
+            return res.sendStatus(404);
+        }
+
+        return res.status(200).send(clientOrders);
+        
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
+};
+
+export { createOrder, getOrder, getOrderById };
